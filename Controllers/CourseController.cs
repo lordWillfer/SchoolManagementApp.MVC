@@ -10,6 +10,7 @@ using SchoolManagementApp.MVC.Data;
 
 namespace SchoolManagementApp.MVC.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
         private readonly SchoolManagementDbContext _context;
@@ -46,7 +47,6 @@ namespace SchoolManagementApp.MVC.Controllers
         }
 
         // GET: Course/Create
-        [Authorize]
         public IActionResult Create()
         {
             return View();
