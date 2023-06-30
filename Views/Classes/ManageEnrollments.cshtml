@@ -18,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var student in Model.Enrollments)
+        @foreach (var student in Model.Students)
         {
             <tr>
                 <td>@student.FirstName</td>
@@ -45,7 +45,7 @@
 <form asp-action="EnrollStudent" id="classEnrollmentForm">
     <input type="hidden" id="classid" name="ClassId" value="@Model.Class.Id" />
     <input type="hidden" id="studentId" name="StudentId" />
-    <input type="hidden" id="shouldEnroll" name="shouldEnroll" />
+    <input type="hidden" id="shouldEnroll" name="ShouldEnroll" />
 </form>
 
 @section Scripts {
@@ -67,7 +67,7 @@
                         var btn = $(this);
                         var studentId = btn.attr("data-studentId");
                         var shouldEnroll = btn.attr("data-shouldEnroll");
-                        $('#studentid').val(studentId);
+                        $('#studentId').val(studentId);
                         $('#shouldEnroll').val(shouldEnroll);
                         $('#classEnrollmentForm').submit();
                     }
