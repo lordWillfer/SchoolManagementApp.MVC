@@ -41,6 +41,7 @@
                 <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete Old</a>
                 <button data-id="@item.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
+                <a asp-action="ManaggeEnrollments" class="btn btn-success" asp-route-id="@item.Id">Manage Enrollments</a>
             </td>
         </tr>
 }
