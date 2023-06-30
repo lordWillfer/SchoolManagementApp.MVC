@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,10 +16,12 @@ namespace SchoolManagementApp.MVC.Controllers
     public class ClassesController : Controller
     {
         private readonly SchoolManagementDbContext _context;
+        private readonly INotyfService _notyfService;
 
-        public ClassesController(SchoolManagementDbContext context)
+        public ClassesController(SchoolManagementDbContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Classes
@@ -171,19 +174,24 @@ namespace SchoolManagementApp.MVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<ActionResult> ManageEnrollments(int id)
+        public async Task<ActionResult> ManageEnrollments(int classId)
         {
             var @class = await _context.Classes
             .Include(q => q.Course)
             .Include(q => q.Lecturer)
             .Include(q => q.Enrollments)
             .ThenInclude(q => q.Student)
-            .FirstOrDefaultAsync(m => m.Id == id);
+            .FirstOrDefaultAsync(m => m.Id == classId);
 
             var students = await _context.Students.ToListAsync();
 
             var model = new ClassEnrollmentViewModel();
-            model.Class = @class;
+            model.Class = new ClassViewModel {
+              Id = @class.Id,
+              CourseName = $"{@class.Course.Code} - {@class.Course.Name}  ({@class.Course.Credits} Credits)",
+              LecturerName = $"{@class.Lecturer.FirstName} {@class.Lecturer.LastName}",
+              Time = @class.Time.ToString()
+            };
 
             foreach (var stu in students)
             {
@@ -211,6 +219,7 @@ namespace SchoolManagementApp.MVC.Controllers
                 enrollment.ClassId = classId;
                 enrollment.StudentId = studentId;
                 await _context.AddAsync(enrollment);
+                _notyfService.Success($"Student Enrolled Successfully.");
             }
             else
             {
@@ -218,12 +227,13 @@ namespace SchoolManagementApp.MVC.Controllers
 
                 if (enrollment != null) {
                     _context.Remove(enrollment);
+                    _notyfService.Warning($"Student Unenrolled Successfully.");
                 }
             }
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(ManageEnrollments), new { id = classId});
+            return RedirectToAction(nameof(ManageEnrollments), new { classId = classId});
         }
 
         private bool ClassExists(int id)

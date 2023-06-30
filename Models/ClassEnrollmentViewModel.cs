@@ -4,6 +4,6 @@ namespace SchoolManagementApp.MVC.Models;
 
 public class ClassEnrollmentViewModel
 {
-    public Class? Class { get; set; }
+    public ClassViewModel? Class { get; set; }
     public List<StudentEnrollmentViewModel> Students { get; set; } = new List<StudentEnrollmentViewModel>();
 }
