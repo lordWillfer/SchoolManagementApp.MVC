@@ -50,8 +50,8 @@ namespace SchoolManagementApp.MVC.Controllers
         // GET: Classes/Create
         public IActionResult Create()
         {
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id");
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "Id");
+            CreateSelectLists();
+            
             return View();
         }
 
@@ -68,8 +68,9 @@ namespace SchoolManagementApp.MVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id", @class.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "Id", @class.LecturerId);
+            
+            CreateSelectLists();
+            
             return View(@class);
         }
 
@@ -86,8 +87,9 @@ namespace SchoolManagementApp.MVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id", @class.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "Id", @class.LecturerId);
+            
+            CreateSelectLists();
+            
             return View(@class);
         }
 
@@ -123,8 +125,9 @@ namespace SchoolManagementApp.MVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id", @class.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "Id", @class.LecturerId);
+
+            CreateSelectLists();
+            
             return View(@class);
         }
 
@@ -170,6 +173,20 @@ namespace SchoolManagementApp.MVC.Controllers
         private bool ClassExists(int id)
         {
           return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private void CreateSelectLists() {
+            var courses = _context.Courses.Select(q => new {
+                CourseName = $"{q.Code} - {q.Name} ({q.Credits} Credits)",
+                q.Id
+            });
+            ViewData["CourseId"] = new SelectList(courses, "Id", "CourseName");
+            
+            var lecturers = _context.Lecturers.Select(q => new {
+                Fullname = $"{q.FirstName} {q.LastName}",
+                Id = q.Id
+            });
+            ViewData["LecturerId"] = new SelectList(lecturers, "Id", "Fullname");
         }
     }
 }
